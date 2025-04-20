@@ -6,9 +6,15 @@ yandex_practicum
 структура:
 
 README.md
+
 conftest.py
+
 .gitignore
+
 tests/
+
   test_login.py
+  
   test_personal_account.py
+  
   test_registration.py
