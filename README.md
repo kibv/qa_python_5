@@ -11,10 +11,8 @@ conftest.py
 
 .gitignore
 
-tests/
-
-  test_login.py
+tests/test_login.py
   
-  test_personal_account.py
+tests/test_personal_account.py
   
-  test_registration.py
+tests/test_registration.py
