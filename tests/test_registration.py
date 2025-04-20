@@ -2,11 +2,9 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from conftest import generate_email, generate_password, generate_name
-import time
+from conftest import generate_email, generate_name
 
 class TestRegistration:
-
     def fill_registration_form(self, driver, name, email, password):
         name_field = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//fieldset[1]//input")))

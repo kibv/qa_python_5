@@ -4,15 +4,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 def test_go_to_personal_account(driver, registered_user):
-    # Вход в систему
     driver.get("https://stellarburgers.nomoreparties.site/login")
 
-    # Ожидаем появления формы входа
     WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
     )
 
-    # Заполняем форму входа
     email_input = WebDriverWait(driver, 10).until(
         EC.visibility_of_element_located((By.XPATH, "//input[@name='name']"))
     )
@@ -23,7 +20,6 @@ def test_go_to_personal_account(driver, registered_user):
     )
     password_input.send_keys(registered_user["password"])
 
-    #Ожидаем
     login_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.XPATH, "//button[text()='Войти']"))
     )

@@ -1,20 +1,10 @@
-import pytest
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 class TestConstructor:
-    @pytest.fixture(autouse=True)
-    def setup(self, driver):
-        driver.get("https://stellarburgers.nomoreparties.site/")
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
-        )
-        yield
-
     def switch_to_section(self, driver, section_name):
+
         section_tab = driver.find_element(By.XPATH, f"//span[text()='{section_name}']/..")
         ActionChains(driver).move_to_element(section_tab).click().perform()
         time.sleep(3)

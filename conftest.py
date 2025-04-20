@@ -1,16 +1,17 @@
-# conftest.py
-import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 import pytest
 import random
 import string
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 def generate_email():
     letters = string.ascii_lowercase
     username = ''.join(random.choice(letters) for _ in range(8))
-    cohort = "20"  # Номер когорты
+    cohort = "20"
     random_digits = ''.join(random.choice(string.digits) for _ in range(3))
     return f"{username}_{cohort}_{random_digits}@yandex.ru"
 
@@ -23,8 +24,7 @@ def generate_name():
 
 @pytest.fixture
 def get_credentials():
-    cohort_number = 20
-    email = generate_email(cohort_number)
+    email = generate_email()
     password = generate_password()
     return email, password
 
@@ -42,3 +42,10 @@ def driver():
     yield driver
     driver.quit()
 
+@pytest.fixture(autouse=True, scope="function")  # Меняем class -> function
+def auto_load_main_page(driver):
+    driver.get("https://stellarburgers.nomoreparties.site/")
+    WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
+    )
+    yield
