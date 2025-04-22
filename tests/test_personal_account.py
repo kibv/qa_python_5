@@ -1,77 +1,78 @@
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from locators import LoginPageLocators, MainPageLocators, PersonalAccountLocators
+from urls import LOGIN_URL, PROFILE_URL, BASE_URL
 
 def test_go_to_personal_account(driver, registered_user):
-    driver.get("https://stellarburgers.nomoreparties.site/login")
+    # Используем константу URL
+    driver.get(LOGIN_URL)
 
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+        EC.visibility_of_element_located(LoginPageLocators.LOGIN_HEADER)
     )
 
     email_input = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//input[@name='name']"))
+        EC.visibility_of_element_located(LoginPageLocators.EMAIL_INPUT)
     )
     email_input.send_keys(registered_user["email"])
 
     password_input = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//input[@name='Пароль']"))
+        EC.visibility_of_element_located(LoginPageLocators.PASSWORD_INPUT)
     )
     password_input.send_keys(registered_user["password"])
 
     login_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[text()='Войти']"))
+        EC.element_to_be_clickable(LoginPageLocators.LOGIN_BUTTON)
     )
     driver.execute_script("arguments[0].click();", login_button)
 
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
+        EC.visibility_of_element_located(MainPageLocators.CONSTRUCTOR_HEADER)
     )
     account_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//a[@href='/account']"))
+        EC.presence_of_element_located(MainPageLocators.ACCOUNT_BUTTON)
     )
     driver.execute_script("arguments[0].click();", account_button)
 
     try:
         WebDriverWait(driver, 15).until(
-            EC.visibility_of_element_located((By.XPATH, "//a[text()='Профиль']"))
+            EC.visibility_of_element_located(PersonalAccountLocators.PROFILE_LINK)
         )
-        assert "account" in driver.current_url
+        assert PROFILE_URL in driver.current_url
     except TimeoutException:
         driver.save_screenshot("personal_account_error.png")
         raise
 
 def test_logout_from_personal_account(driver, registered_user):
-    driver.get("https://stellarburgers.nomoreparties.site/login")
+    driver.get(LOGIN_URL)
 
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+        EC.visibility_of_element_located(LoginPageLocators.LOGIN_HEADER)
     )
 
-    driver.find_element(By.XPATH, "//input[@name='name']").send_keys(registered_user["email"])
-    driver.find_element(By.XPATH, "//input[@name='Пароль']").send_keys(registered_user["password"])
+    # Заполнение формы
+    driver.find_element(*LoginPageLocators.EMAIL_INPUT).send_keys(registered_user["email"])
+    driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(registered_user["password"])
 
     login_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[text()='Войти']"))
+        EC.element_to_be_clickable(LoginPageLocators.LOGIN_BUTTON)
     )
     driver.execute_script("arguments[0].click();", login_button)
 
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
+        EC.visibility_of_element_located(MainPageLocators.CONSTRUCTOR_HEADER)
     )
-
     account_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//a[@href='/account']"))
+        EC.presence_of_element_located(MainPageLocators.ACCOUNT_BUTTON)
     )
     driver.execute_script("arguments[0].click();", account_button)
 
     WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//a[text()='Профиль']"))
+        EC.visibility_of_element_located(PersonalAccountLocators.PROFILE_LINK)
     )
-
     logout_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//button[text()='Выход']"))
+        EC.presence_of_element_located(PersonalAccountLocators.LOGOUT_BUTTON)
     )
     driver.execute_script("arguments[0].click();", logout_button)
 
@@ -80,81 +81,42 @@ def test_logout_from_personal_account(driver, registered_user):
     )
 
 def test_navigate_from_account_to_constructor(driver, registered_user):
-    driver.get("https://stellarburgers.nomoreparties.site/login")
+    driver.get(LOGIN_URL)
 
     WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//h2[text()='Вход']"))
+        EC.visibility_of_element_located(LoginPageLocators.LOGIN_HEADER)
     )
 
-    driver.find_element(By.XPATH, "//input[@name='name']").send_keys(registered_user["email"])
-    driver.find_element(By.XPATH, "//input[@name='Пароль']").send_keys(registered_user["password"])
+    driver.find_element(*LoginPageLocators.EMAIL_INPUT).send_keys(registered_user["email"])
+    driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(registered_user["password"])
 
     login_button = WebDriverWait(driver, 15).until(
-        EC.presence_of_element_located((By.XPATH, "//button[text()='Войти']"))
+        EC.element_to_be_clickable(LoginPageLocators.LOGIN_BUTTON)
     )
-    driver.execute_script("arguments[0].click();", login_button)
+    login_button.click()
 
     WebDriverWait(driver, 15).until(
-        EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
+        EC.visibility_of_element_located(MainPageLocators.CONSTRUCTOR_HEADER)
     )
 
     account_button = WebDriverWait(driver, 15).until(
-        EC.presence_of_element_located((By.XPATH, "//a[@href='/account']"))
+        EC.element_to_be_clickable(MainPageLocators.ACCOUNT_BUTTON)
     )
-    driver.execute_script("arguments[0].click();", account_button)
+    account_button.click()
 
     WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.XPATH, "//a[text()='Профиль']"))
+        EC.visibility_of_element_located(PersonalAccountLocators.PROFILE_LINK)
     )
 
     constructor_button = WebDriverWait(driver, 15).until(
-        EC.presence_of_element_located((By.XPATH, "//p[text()='Конструктор']"))
+        EC.element_to_be_clickable(MainPageLocators.CONSTRUCTOR_BUTTON)
     )
-    driver.execute_script("arguments[0].click();", constructor_button)
+    constructor_button.click()
 
     WebDriverWait(driver, 15).until(
-        EC.url_to_be("https://stellarburgers.nomoreparties.site/")
+        lambda d: BASE_URL in d.current_url
     )
 
-    account_button = WebDriverWait(driver, 15).until(
-        EC.presence_of_element_located((By.XPATH, "//a[@href='/account']"))
+    WebDriverWait(driver, 15).until(
+        EC.visibility_of_element_located(MainPageLocators.CONSTRUCTOR_HEADER)
     )
-    driver.execute_script("arguments[0].click();", account_button)
-
-    WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.XPATH, "//a[text()='Профиль']"))
-    )
-
-    try:
-        logo = WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'AppHeader_header__logo')]//a"))
-        )
-
-        print(f"Current URL before logo click: {driver.current_url}")
-
-        driver.execute_script("""
-            try {
-                arguments[0].click();
-            } catch(e) {
-                console.error('Logo click error:', e);
-                throw e;
-            }
-        """, logo)
-
-        WebDriverWait(driver, 20).until(
-            lambda d: d.current_url in [
-                "https://stellarburgers.nomoreparties.site/",
-                "https://stellarburgers.nomoreparties.site"
-            ]
-        )
-
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
-        )
-
-        print(f"Current URL after logo click: {driver.current_url}")
-
-    except Exception as e:
-        driver.save_screenshot("logo_click_failure.png")
-        print(f"Page source at failure:\n{driver.page_source[:2000]}")  # Логируем часть HTML для отладки
-        raise

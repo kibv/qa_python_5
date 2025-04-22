@@ -3,10 +3,11 @@ import random
 import string
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+from urls import BASE_URL
+from locators import MainPageLocators
 
 def generate_email():
     letters = string.ascii_lowercase
@@ -38,14 +39,14 @@ def registered_user():
 @pytest.fixture
 def driver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    driver.get("https://stellarburgers.nomoreparties.site/")
+    driver.get(BASE_URL)
     yield driver
     driver.quit()
 
 @pytest.fixture(autouse=True, scope="function")  # Меняем class -> function
 def auto_load_main_page(driver):
-    driver.get("https://stellarburgers.nomoreparties.site/")
+    driver.get(BASE_URL)
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//h1[text()='Соберите бургер']"))
+        EC.visibility_of_element_located(MainPageLocators.CONSTRUCTOR_HEADER)
     )
     yield

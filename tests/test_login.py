@@ -1,18 +1,18 @@
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from locators import LoginPageLocators, MainPageLocators, PersonalAccountLocators
 
 class TestLogin:
 
     def perform_login(self, driver, email, password):
         try:
             WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, "//input[@name='name']"))
+                EC.visibility_of_element_located(LoginPageLocators.EMAIL_INPUT)
             ).send_keys(email)
 
-            driver.find_element(By.XPATH, "//input[@type='password']").send_keys(password)
-            driver.find_element(By.XPATH, "//button[contains(text(), 'Войти')]").click()
+            driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(password)
+            driver.find_element(*LoginPageLocators.LOGIN_BUTTON).click()
 
             WebDriverWait(driver, 10).until(
                 lambda d: "/" in d.current_url or "account" in d.current_url
@@ -23,7 +23,7 @@ class TestLogin:
 
     def test_login_via_main_page_button(self, driver, registered_user):
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Войти в аккаунт')]"))
+            EC.element_to_be_clickable(MainPageLocators.LOGIN_BUTTON)
         ).click()
 
         assert self.perform_login(driver, registered_user["email"], registered_user["password"]), \
@@ -31,7 +31,7 @@ class TestLogin:
 
     def test_login_via_personal_account_button(self, driver, registered_user):
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, 'account')]"))
+            EC.element_to_be_clickable(MainPageLocators.PERSONAL_ACCOUNT_BUTTON)
         ).click()
 
         assert self.perform_login(driver, registered_user["email"], registered_user["password"]), \
@@ -39,15 +39,15 @@ class TestLogin:
 
     def test_login_via_registration_form(self, driver, registered_user):
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Войти в аккаунт')]"))
+            EC.element_to_be_clickable(MainPageLocators.LOGIN_BUTTON)
         ).click()
 
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Зарегистрироваться')]"))
+            EC.element_to_be_clickable(MainPageLocators.REGISTER_LINK)
         ).click()
 
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Войти')]"))
+            EC.element_to_be_clickable(LoginPageLocators.LOGIN_LINK)
         ).click()
 
         assert self.perform_login(driver, registered_user["email"], registered_user["password"]), \
@@ -55,15 +55,15 @@ class TestLogin:
 
     def test_login_via_password_recovery_form(self, driver, registered_user):
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Войти в аккаунт')]"))
+            EC.element_to_be_clickable(MainPageLocators.LOGIN_BUTTON)
         ).click()
 
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Восстановить пароль')]"))
+            EC.element_to_be_clickable(PersonalAccountLocators.RECOVERY_LINK)
         ).click()
 
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Войти')]"))
+            EC.element_to_be_clickable(LoginPageLocators.LOGIN_LINK)
         ).click()
 
         assert self.perform_login(driver, registered_user["email"], registered_user["password"]), \

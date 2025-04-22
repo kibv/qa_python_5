@@ -7,6 +7,10 @@ Cтруктура:
 
 /README.md
 
+/locators.md
+
+/urls.md
+
 /conftest.py
 
 /.gitignore
